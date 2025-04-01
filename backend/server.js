@@ -7,7 +7,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DB_PATH = './agendamentos.json';
 
-app.use(cors({ origin: 'https://agenda-koby-v02.onrender.com' }));
+app.use(cors({
+  origin: 'https://agenda-koby-v02.onrender.com'
+}));
 app.use(bodyParser.json());
 
 function lerAgendamentos() {
@@ -59,7 +61,7 @@ app.get('/horarios', (req, res) => {
     "16:00", "16:15", "16:30", "16:45",
     "17:00", "17:15", "17:30", "17:45"
   ];
-  res.json(todosHorarios.map(h => { return { hora: h } }));
+  res.json(todosHorarios.map(h => ({ hora: h })));
 });
 
 app.listen(PORT, () => {

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Agendamento</title>
+</head>
+<body>
+  <h2>Formulário de Agendamento</h2>
+ <form id="formAgendamento">
+
+  <label>Analista:
+    <select name="analista" id="analista" required>
+      <option value="">-- Selecione --</option>
+      <option value="Harisson">Harisson</option>
+      <option value="Byanka">Byanka</option>
+    </select>
+  </label><br /><br />
+
+  <label>Data: <input type="date" name="data" required /></label><br /><br />
+
+    <label>Hora:
+     <select name="hora" id="hora" required>
+        <option value="">-- Selecione um horário --</option>
+        <option value="09:00">09:00</option>
+        <option value="09:15">09:15</option>
+        <option value="09:30">09:30</option>
+        <option value="09:45">09:45</option>
+        <option value="10:00">10:00</option>
+        <option value="10:15">10:15</option>
+        <option value="10:30">10:30</option>
+        <option value="10:45">10:45</option>
+        <option value="11:00">11:00</option>
+        <option value="11:15">11:15</option>
+        <option value="11:30">11:30</option>
+        <option value="11:45">11:45</option>
+        <option value="12:00">12:00</option>
+        <option value="12:15">12:15</option>
+        <option value="12:30">12:30</option>
+        <option value="12:45">12:45</option>
+        <option value="13:00">13:00</option>
+        <option value="13:15">13:15</option>
+        <option value="13:30">13:30</option>
+        <option value="13:45">13:45</option>
+        <option value="14:00">14:00</option>
+        <option value="14:15">14:15</option>
+        <option value="14:30">14:30</option>
+        <option value="14:45">14:45</option>
+        <option value="15:00">15:00</option>
+        <option value="15:15">15:15</option>
+        <option value="15:30">15:30</option>
+        <option value="15:45">15:45</option>
+        <option value="16:00">16:00</option>
+        <option value="16:15">16:15</option>
+        <option value="16:30">16:30</option>
+        <option value="16:45">16:45</option>
+        <option value="17:00">17:00</option>
+        <option value="17:15">17:15</option>
+        <option value="17:30">17:30</option>
+        <option value="17:45">17:45</option>
+      </select>
+    </label><br /><br />
+
+    <label>Empreendimento: <input type="text" name="empreendimento" required /></label><br /><br />
+    <label>Torre: <input type="text" name="torre" required /></label><br /><br />
+    <label>Unidade: <input type="text" name="unidade" required /></label><br /><br />
+    <label>Nome Completo: <input type="text" name="nomeCompleto" required /></label><br /><br />
+    <label>CPF: <input type="text" name="cpf" required /></label><br /><br />
+    <label>Tipo de Atendimento:
+      <select name="tipoAtendimento">
+        <option value="presencial">Presencial</option>
+        <option value="vídeo">Vídeo</option>
+      </select>
+    </label><br /><br />
+    
+    <button type="submit">Agendar</button>
+  </form>
+
+  <p id="mensagem"></p>
+
+<h3>Agendamentos Futuros</h3>
+
+<label for="filtroAnalista"><strong>Filtrar por Analista:</strong></label>
+<select id="filtroAnalista">
+  <option value="todos">Todos</option>
+  <option value="Harisson">Harisson</option>
+  <option value="Byanka">Byanka</option>
+</select>
+
+<table border="1" id="tabela-agendamentos">
+ <thead>
+  <tr>
+    <th>Data</th>
+    <th>Hora</th>
+    <th>Nome</th>
+    <th>CPF</th>
+    <th>Empreendimento</th>
+    <th>Torre</th>
+    <th>Unidade</th>
+    <th>Tipo</th>
+    <th>Analista</th>
+    <th>Cancelar</th>
+  </tr>
+</thead>
+  <tbody></tbody>
+</table>
+
+<script>
+  // Enviar novo agendamento
+  document.getElementById("formAgendamento").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+
+    const dados = {
+      data: form.data.value,
+      hora: form.hora.value,
+      empreendimento: form.empreendimento.value,
+      torre: form.torre.value,
+      unidade: form.unidade.value,
+      nomeCompleto: form.nomeCompleto.value,
+      cpf: form.cpf.value,
+      tipoAtendimento: form.tipoAtendimento.value,
+      analista: form.analista.value,
+    };
+
+    try {
+      const resposta = await fetch("http://localhost:3000/agendar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dados)
+      });
+
+      const resultado = await resposta.json();
+      console.log("Resultado da API:", resultado);
+
+      document.getElementById("mensagem").innerText = resultado.mensagem || "Erro no agendamento.";
+
+      if (resposta.ok) {
+        form.reset();
+        carregarAgendamentos(); // Atualiza a tabela
+      }
+    } catch (error) {
+      document.getElementById("mensagem").innerText = "Erro ao conectar com o servidor.";
+    }
+  });
+
+  // Carrega os agendamentos futuros
+async function carregarAgendamentos() {
+  const resposta = await fetch("http://localhost:3000/agendamentos");
+  const agendamentos = await resposta.json();
+
+  const filtroSelect = document.getElementById("filtroAnalista");
+  const analistaSelecionado = filtroSelect.value;
+
+  const tbody = document.querySelector("#tabela-agendamentos tbody");
+  tbody.innerHTML = "";
+
+  const agendamentosFiltrados = analistaSelecionado === "todos"
+    ? agendamentos
+    : agendamentos.filter(a => a.analista === analistaSelecionado);
+
+  agendamentosFiltrados.forEach(a => {
+    const linha = document.createElement("tr");
+    linha.innerHTML = `
+      <td>${a.data}</td>
+      <td>${a.hora}</td>
+      <td>${a.nomeCompleto}</td>
+      <td>${a.cpf}</td>
+      <td>${a.empreendimento}</td>
+      <td>${a.torre}</td>
+      <td>${a.unidade}</td>
+      <td>${a.tipoAtendimento}</td>
+      <td>${a.analista}</td>
+      <td><button onclick="cancelarAgendamento('${a.data}', '${a.hora}')">Cancelar</button></td>
+    `;
+    tbody.appendChild(linha);
+  });
+}
+
+document.getElementById("filtroAnalista").addEventListener("change", () => {
+  carregarAgendamentos();
+});
+
+  // Cancela um agendamento
+  async function cancelarAgendamento(data, hora) {
+    const confirmar = confirm(`Deseja cancelar o agendamento de ${data} às ${hora}?`);
+    if (!confirmar) return;
+
+    const resposta = await fetch("http://localhost:3000/agendamentos", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ data, hora })
+    });
+
+    const resultado = await resposta.json();
+    alert(resultado.mensagem || "Erro ao cancelar.");
+    carregarAgendamentos();
+  }
+
+  // Carrega a tabela ao abrir a página
+  carregarAgendamentos();
+document.getElementById("analista").addEventListener("change", atualizarHorariosDisponiveis);
+document.querySelector('input[name="data"]').addEventListener("change", atualizarHorariosDisponiveis);
+
+async function atualizarHorariosDisponiveis() {
+  const data = document.querySelector('input[name="data"]').value;
+  const analista = document.getElementById("analista").value;
+  const selectHora = document.getElementById("hora");
+  const campos = document.querySelectorAll('#formAgendamento input, #formAgendamento select, #formAgendamento button');
+  const mensagem = document.getElementById("mensagem");
+
+  if (!data || !analista) return; // só continua se os dois estiverem selecionados
+
+  // Busca os horários disponíveis do dia
+  const respostaHorarios = await fetch(`http://localhost:3000/horarios?dia=${data}`);
+  const todosHorarios = await respostaHorarios.json();
+
+  // Busca os agendamentos existentes
+  const respostaAgendados = await fetch("http://localhost:3000/agendamentos");
+  const agendados = await respostaAgendados.json();
+
+  const ocupados = agendados
+    .filter(a => a.data === data && a.analista === analista)
+    .map(a => a.hora);
+
+  const horariosDisponiveis = todosHorarios.filter(h => !ocupados.includes(h.hora));
+
+  // Limpa e atualiza o <select> de horários
+  selectHora.innerHTML = '<option value="">-- Selecione um horário --</option>';
+
+  if (horariosDisponiveis.length === 0) {
+    const option = document.createElement("option");
+    option.disabled = true;
+    option.textContent = "Nenhum horário disponível";
+    selectHora.appendChild(option);
+    mensagem.innerText = `⚠️ ${analista} não possui horários disponíveis em ${data}.`;
+
+    // ⚠️ Só desativa o restante se não houver NENHUM horário disponível
+    campos.forEach(el => {
+      if (!["analista", "data"].includes(el.name)) el.disabled = true;
+    });
+    return;
+  }
+
+  // Preenche os horários disponíveis
+  horariosDisponiveis.forEach(h => {
+    const option = document.createElement("option");
+    option.value = h.hora;
+    option.textContent = h.hora;
+    selectHora.appendChild(option);
+  });
+
+  // ✅ Habilita todo o formulário se tiver horário disponível
+  campos.forEach(el => el.disabled = false);
+  mensagem.innerText = "";
+}
+</script>
+</body>
+</html>

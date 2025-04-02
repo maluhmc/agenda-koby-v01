@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Agenda de Atendimentos</title>
   <style>
     body {
@@ -47,23 +47,14 @@
       border: 1px solid #ccc;
       padding: 8px;
       text-align: center;
-      vertical-align: top;
     }
     th {
       background-color: #f7f7f7;
     }
-    .livre {
-      background-color: #d4edda;
-    }
-    .harisson {
-      background-color: #d0ebff;
-    }
-    .leandro {
-      background-color: #d4f4dd;
-    }
-    .byanka {
-      background-color: #fce4ec;
-    }
+    .livre { background-color: #d4edda; }
+    .harisson { background-color: #d0ebff; }
+    .leandro { background-color: #d4f4dd; }
+    .byanka { background-color: #fce4ec; }
     footer {
       margin-top: 40px;
       font-size: 0.9em;
@@ -82,12 +73,12 @@
   </div>
 
   <div id="formulario" class="tab-content active">
-    <iframe src="formulario.html" width="100%" height="1000px" frameborder="0"></iframe>
+    <iframe id="iframeForm" src="formulario.html" width="100%" height="1000px" frameborder="0"></iframe>
   </div>
 
   <div id="calendario" class="tab-content">
     <h3 id="titulo-semana">Calendário Semanal</h3>
-    <div style="margin-bottom: 10px;">
+    <div>
       <button onclick="mudarSemana(-1)">Semana Anterior</button>
       <button onclick="mudarSemana(1)">Próxima Semana</button>
     </div>
@@ -107,89 +98,117 @@
   </div>
 
   <div id="certificados" class="tab-content">
-    <iframe src="formulario.html#certificados" width="100%" height="1000px" frameborder="0"></iframe>
+    <h2>Certificados Emitidos</h2>
+    <table id="tabela-certificados" border="1">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Hora</th>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Empreendimento</th>
+          <th>Torre</th>
+          <th>Unidade</th>
+          <th>Tipo</th>
+          <th>Analista</th>
+          <th>Data de Emissão</th>
+        </tr>
+      </thead>
+      <tbody id="corpo-certificados"></tbody>
+    </table>
   </div>
 
   <footer>
     Criado por marialuisa.campos
   </footer>
 
-  <script>
-    function mostrarAba(aba) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
-      document.getElementById(aba).classList.add('active');
-      document.getElementById('btn' + aba.charAt(0).toUpperCase() + aba.slice(1)).classList.add('active');
-      if (aba === 'calendario') carregarCalendario();
+<script>
+  function mostrarAba(aba) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(aba).classList.add('active');
+    document.getElementById('btn' + aba.charAt(0).toUpperCase() + aba.slice(1)).classList.add('active');
+    if (aba === 'calendario') carregarCalendario();
+  }
+
+  const horarios = [
+    "09:00", "09:15", "09:30", "09:45", "10:00", "10:15", "10:30", "10:45",
+    "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45",
+    "13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45",
+    "15:00", "15:15", "15:30", "15:45", "16:00", "16:15", "16:30", "16:45",
+    "17:00", "17:15", "17:30", "17:45"
+  ];
+  let offsetSemana = 0;
+
+  function mudarSemana(d) {
+    offsetSemana += d;
+    carregarCalendario();
+  }
+
+  async function carregarCalendario() {
+    const hoje = new Date();
+    const inicio = new Date(hoje.setDate(hoje.getDate() - hoje.getDay() + 1 + offsetSemana * 7));
+    const dias = [];
+
+    for (let i = 0; i < 5; i++) {
+      const data = new Date(inicio);
+      data.setDate(inicio.getDate() + i);
+      const iso = data.toISOString().split('T')[0];
+      dias.push(iso);
+      const nomeDia = data.toLocaleDateString('pt-BR', { weekday: 'long' });
+      document.getElementById('dia' + i).innerText = `${nomeDia} (${data.toLocaleDateString('pt-BR')})`;
     }
 
-    const horarios = [
-      "09:00", "09:15", "09:30", "09:45", "10:00", "10:15", "10:30", "10:45",
-      "11:00", "11:15", "11:30", "11:45", "12:00", "12:15", "12:30", "12:45",
-      "13:00", "13:15", "13:30", "13:45", "14:00", "14:15", "14:30", "14:45",
-      "15:00", "15:15", "15:30", "15:45", "16:00", "16:15", "16:30", "16:45",
-      "17:00", "17:15", "17:30", "17:45"
-    ];
+    try {
+      const res = await fetch("https://agenda-koby-v01.onrender.com/agendamentos");
+      const dados = await res.json();
 
-    let offsetSemana = 0;
+      const tbody = document.getElementById("corpo-calendario");
+      tbody.innerHTML = "";
 
-    function mudarSemana(direcao) {
-      offsetSemana += direcao;
-      carregarCalendario();
-    }
-
-    async function carregarCalendario() {
-      const hoje = new Date();
-      const inicioSemana = new Date(hoje.setDate(hoje.getDate() - hoje.getDay() + 1 + (offsetSemana * 7)));
-      const diasSemana = [];
-      for (let i = 0; i < 5; i++) {
-        const data = new Date(inicioSemana);
-        data.setDate(inicioSemana.getDate() + i);
-        const dia = data.toISOString().split('T')[0];
-        diasSemana.push(dia);
-
-        const nomeDia = data.toLocaleDateString('pt-BR', { weekday: 'long' });
-        const formatado = `${nomeDia.charAt(0).toUpperCase() + nomeDia.slice(1)} (${data.toLocaleDateString('pt-BR')})`;
-        document.getElementById('dia' + i).innerText = formatado;
-      }
-
-      try {
-        const resposta = await fetch("https://agenda-koby-v01.onrender.com/agendamentos");
-        const agendamentos = await resposta.json();
-
-        const tbody = document.getElementById("corpo-calendario");
-        tbody.innerHTML = "";
-
-        horarios.forEach(hora => {
-          const linha = document.createElement("tr");
-          linha.innerHTML = `<td>${hora}</td>`;
-
-          diasSemana.forEach(dia => {
-            const agendamentosDoHorario = agendamentos.filter(a => a.data === dia && a.hora === hora);
-            if (agendamentosDoHorario.length > 0) {
-              let cellContent = "";
-              let tooltipText = "";
-              agendamentosDoHorario.forEach(a => {
-                let classe = "livre";
-                if (a.analista === "Harisson") classe = "harisson";
-                else if (a.analista === "Byanka") classe = "byanka";
-                else if (a.analista === "Leandro") classe = "leandro";
-                cellContent += `<div class="${classe}">${a.analista}</div>`;
-                tooltipText += `${a.analista} - ${a.nomeCompleto}\n${a.empreendimento}, Torre ${a.torre}, Unidade ${a.unidade}\nCPF: ${a.cpf}\nTipo: ${a.tipoAtendimento}\n\n`;
-              });
-              linha.innerHTML += `<td title="${tooltipText.trim()}">${cellContent}</td>`;
-            } else {
-              linha.innerHTML += `<td class="livre">Livre</td>`;
-            }
-          });
-
-          tbody.appendChild(linha);
+      horarios.forEach(h => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${h}</td>`;
+        dias.forEach(dia => {
+          const eventos = dados.filter(a => a.data === dia && a.hora === h);
+          if (eventos.length > 0) {
+            let html = "";
+            eventos.forEach(a => {
+              let cor = a.analista === "Harisson" ? "harisson" : a.analista === "Byanka" ? "byanka" : "leandro";
+              html += `<div class="${cor}" title="${a.nomeCompleto} - ${a.tipoAtendimento}\n${a.empreendimento} Torre ${a.torre} Unid. ${a.unidade}\nCPF: ${a.cpf}">${a.analista}</div>`;
+            });
+            tr.innerHTML += `<td>${html}</td>`;
+          } else {
+            tr.innerHTML += `<td class='livre'>Livre</td>`;
+          }
         });
-      } catch (error) {
-        console.error("Erro ao carregar calendário:", error);
-      }
+        tbody.appendChild(tr);
+      });
+    } catch (err) {
+      console.error("Erro ao buscar agendamentos:", err);
     }
-  </script>
+  }
 
+  // Recebe dados de certificado via postMessage do iframe do formulário
+  window.addEventListener("message", function(event) {
+    if (event.data.tipo === "certificado") {
+      const cert = event.data.dados;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${cert.data}</td>
+        <td>${cert.hora}</td>
+        <td>${cert.nomeCompleto}</td>
+        <td>${cert.cpf}</td>
+        <td>${cert.empreendimento}</td>
+        <td>${cert.torre}</td>
+        <td>${cert.unidade}</td>
+        <td>${cert.tipoAtendimento}</td>
+        <td>${cert.analista}</td>
+        <td>${cert.dataEmissao}</td>
+      `;
+      document.getElementById("corpo-certificados").appendChild(tr);
+    }
+  });
+</script>
 </body>
 </html>

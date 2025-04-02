@@ -126,8 +126,7 @@
     };
 
     try {
-      const resposta = await fetch("https://agenda-koby-v01.onrender.com/agendar", {
-    headers: { 'Content-Type': 'application/json' },
+      const resposta = await fetch("https://agenda-koby-v01.onrender.comhttps://agenda-koby-v01.onrender.com/agendar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -151,7 +150,7 @@
 
   // Carrega os agendamentos futuros
 async function carregarAgendamentos() {
-  const resposta = await fetch("https://agenda-koby-v01.onrender.com/agendamentos", { headers: { 'Content-Type': 'application/json' } });
+  const resposta = await fetch("https://agenda-koby-v01.onrender.comhttps://agenda-koby-v01.onrender.com/agendamentos");
   const agendamentos = await resposta.json();
 
   const filtroSelect = document.getElementById("filtroAnalista");
@@ -191,7 +190,7 @@ document.getElementById("filtroAnalista").addEventListener("change", () => {
     const confirmar = confirm(`Deseja cancelar o agendamento de ${data} às ${hora}?`);
     if (!confirmar) return;
 
-    const resposta = await fetch("https://agenda-koby-v01.onrender.com/agendamentos", {
+    const resposta = await fetch("https://agenda-koby-v01.onrender.comhttps://agenda-koby-v01.onrender.com/agendamentos", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json"
@@ -219,11 +218,11 @@ async function atualizarHorariosDisponiveis() {
   if (!data || !analista) return; // só continua se os dois estiverem selecionados
 
   // Busca os horários disponíveis do dia
-  const respostaHorarios = await fetch(`https://agenda-koby-v01.onrender.com/horarios?dia=${data}`);
+  const respostaHorarios = await fetch(`https://agenda-koby-v01.onrender.comhttps://agenda-koby-v01.onrender.com/horarios?dia=${data}`);
   const todosHorarios = await respostaHorarios.json();
 
   // Busca os agendamentos existentes
-  const respostaAgendados = await fetch("https://agenda-koby-v01.onrender.com/agendamentos", { headers: { 'Content-Type': 'application/json' } });
+  const respostaAgendados = await fetch("https://agenda-koby-v01.onrender.comhttps://agenda-koby-v01.onrender.com/agendamentos");
   const agendados = await respostaAgendados.json();
 
   const ocupados = agendados
@@ -266,19 +265,46 @@ async function atualizarHorariosDisponiveis() {
 <script>
   function emitirCertificado(botao) {
     const linha = botao.closest('tr');
-    const clone = linha.cloneNode(true);
+    const dados = {};
+    const colunas = linha.querySelectorAll('td');
+
+    dados.data = colunas[0].innerText;
+    dados.hora = colunas[1].innerText;
+    dados.nomeCompleto = colunas[2].innerText;
+    dados.cpf = colunas[3].innerText;
+    dados.empreendimento = colunas[4].innerText;
+    dados.torre = colunas[5].innerText;
+    dados.unidade = colunas[6].innerText;
+    dados.tipoAtendimento = colunas[7].innerText;
+    dados.analista = colunas[8].innerText;
+
     const agora = new Date();
-    const dataEmissao = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR');
+    dados.dataEmissao = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR');
 
-    const novaCelula = document.createElement('td');
-    novaCelula.innerText = dataEmissao;
-    clone.appendChild(novaCelula);
+    // Envia os dados ao index
+    window.parent.postMessage({ tipo: "certificado", dados }, "*");
 
-    // Remove os botões da nova linha
-    clone.querySelectorAll('button').forEach(btn => btn.remove());
-
-    document.getElementById('corpo-certificados').appendChild(clone);
+    // Remove a linha
     linha.remove();
+  }
+
+  function cancelarAgendamento(botao) {
+    const linha = botao.closest('tr');
+    const colunas = linha.querySelectorAll("td");
+    const data = colunas[0].innerText;
+    const hora = colunas[1].innerText;
+    const analista = colunas[8].innerText;
+
+    fetch("https://agenda-koby-v01.onrender.com/agendamentos", {
+      method: "DELETE",
+      headers: {{
+        "Content-Type": "application/json"
+      }},
+      body: JSON.stringify({ data, hora, analista })
+    })
+    .then(res => res.json())
+    .then(() => location.reload())
+    .catch(() => alert("Erro ao cancelar agendamento."));
   }
 </script>
 </body>

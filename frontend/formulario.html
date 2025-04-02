@@ -13,6 +13,8 @@
       <option value="">-- Selecione --</option>
       <option value="Harisson">Harisson</option>
       <option value="Byanka">Byanka</option>
+  <option value="Leandro">Leandro</option>
+      <option value="Leandro">Leandro</option>
     </select>
   </label><br /><br />
 
@@ -84,6 +86,8 @@
   <option value="todos">Todos</option>
   <option value="Harisson">Harisson</option>
   <option value="Byanka">Byanka</option>
+  <option value="Leandro">Leandro</option>
+      <option value="Leandro">Leandro</option>
 </select>
 
 <table border="1" id="tabela-agendamentos">
@@ -157,9 +161,13 @@ async function carregarAgendamentos() {
   const tbody = document.querySelector("#tabela-agendamentos tbody");
   tbody.innerHTML = "";
 
-  const agendamentosFiltrados = analistaSelecionado === "todos"
+  const agendamentosOrdenados = (const agendamentosFiltrados = analistaSelecionado === "todos"
     ? agendamentos
-    : agendamentos.filter(a => a.analista === analistaSelecionado);
+    : agendamentos.filter(a => a.analista === analistaSelecionado);).sort((a, b) => new Date(b.data) - new Date(a.data));
+  const agendamentosFiltrados = agendamentosOrdenados.map(a => ({
+    ...a,
+    data: new Date(a.data).toLocaleDateString("pt-BR")
+  }));
 
   agendamentosFiltrados.forEach(a => {
     const linha = document.createElement("tr");

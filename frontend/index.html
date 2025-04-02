@@ -58,7 +58,7 @@
     .harisson {
       background-color: #d0ebff;
     }
-    .byanka {
+    .leandro { background-color: #d4f4dd; } .byanka {
       background-color: #fce4ec;
     }
     footer {
@@ -165,7 +165,10 @@
             let cellContent = "";
             let tooltipText = "";
             agendamentosDoHorario.forEach(a => {
-              const classe = a.analista === "Harisson" ? "harisson" : "byanka";
+              let classe = "livre";
+            if (a.analista === "Harisson") classe = "harisson";
+            else if (a.analista === "Byanka") classe = "byanka";
+            else if (a.analista === "Leandro") classe = "leandro";
               cellContent += `<div class="${classe}">${a.analista}</div>`;
               tooltipText += `${a.analista} - ${a.nomeCompleto}\n${a.empreendimento}, Torre ${a.torre}, Unidade ${a.unidade}\nCPF: ${a.cpf}\nTipo: ${a.tipoAtendimento}\n\n`;
             });

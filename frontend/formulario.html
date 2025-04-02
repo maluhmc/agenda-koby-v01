@@ -126,7 +126,7 @@
     };
 
     try {
-      const resposta = await fetch("https://agenda-koby-v01.onrender.comhttps://agenda-koby-v01.onrender.com/agendar", {
+      const resposta = await fetch("https://agenda-koby-v01.onrender.com/agendar", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -150,7 +150,7 @@
 
   // Carrega os agendamentos futuros
 async function carregarAgendamentos() {
-  const resposta = await fetch("https://agenda-koby-v01.onrender.comhttps://agenda-koby-v01.onrender.com/agendamentos");
+  const resposta = await fetch("https://agenda-koby-v01.onrender.com/agendamentos");
   const agendamentos = await resposta.json();
 
   const filtroSelect = document.getElementById("filtroAnalista");
@@ -190,7 +190,7 @@ document.getElementById("filtroAnalista").addEventListener("change", () => {
     const confirmar = confirm(`Deseja cancelar o agendamento de ${data} às ${hora}?`);
     if (!confirmar) return;
 
-    const resposta = await fetch("https://agenda-koby-v01.onrender.comhttps://agenda-koby-v01.onrender.com/agendamentos", {
+    const resposta = await fetch("https://agenda-koby-v01.onrender.com/agendamentos", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json"
@@ -218,11 +218,11 @@ async function atualizarHorariosDisponiveis() {
   if (!data || !analista) return; // só continua se os dois estiverem selecionados
 
   // Busca os horários disponíveis do dia
-  const respostaHorarios = await fetch(`https://agenda-koby-v01.onrender.comhttps://agenda-koby-v01.onrender.com/horarios?dia=${data}`);
+  const respostaHorarios = await fetch(`https://agenda-koby-v01.onrender.com/horarios?dia=${data}`);
   const todosHorarios = await respostaHorarios.json();
 
   // Busca os agendamentos existentes
-  const respostaAgendados = await fetch("https://agenda-koby-v01.onrender.comhttps://agenda-koby-v01.onrender.com/agendamentos");
+  const respostaAgendados = await fetch("https://agenda-koby-v01.onrender.com/agendamentos");
   const agendados = await respostaAgendados.json();
 
   const ocupados = agendados

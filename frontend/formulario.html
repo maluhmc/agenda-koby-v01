@@ -262,5 +262,25 @@ async function atualizarHorariosDisponiveis() {
   mensagem.innerText = "";
 }
 </script>
+
+<script>
+  function emitirCertificado(botao) {
+    const linha = botao.closest('tr');
+    const clone = linha.cloneNode(true);
+    const agora = new Date();
+    const dataEmissao = agora.toLocaleDateString('pt-BR') + ' ' + agora.toLocaleTimeString('pt-BR');
+
+    const novaCelula = document.createElement('td');
+    novaCelula.innerText = dataEmissao;
+    clone.appendChild(novaCelula);
+
+    // Remove os botões da nova linha
+    clone.querySelectorAll('button').forEach(btn => btn.remove());
+
+    document.getElementById('corpo-certificados').appendChild(clone);
+    linha.remove();
+  }
+</script>
 </body>
+
 </html>

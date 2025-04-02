@@ -78,6 +78,7 @@
   <div class="tabs">
     <button id="btnFormulario" class="active" onclick="mostrarAba('formulario')">Formulário</button>
     <button id="btnCalendario" onclick="mostrarAba('calendario')">Calendário Semanal</button>
+    <button id="btnCertificados" onclick="mostrarAba('certificados')">Certificados Emitidos</button>
   </div>
 
   <div id="formulario" class="tab-content active">
@@ -103,6 +104,10 @@
       </thead>
       <tbody id="corpo-calendario"></tbody>
     </table>
+  </div>
+
+  <div id="certificados" class="tab-content">
+    <iframe src="formulario.html#certificados" width="100%" height="1000px" frameborder="0"></iframe>
   </div>
 
   <footer>
@@ -148,37 +153,41 @@
         document.getElementById('dia' + i).innerText = formatado;
       }
 
-      const resposta = await fetch("https://agenda-koby-v02.onrender.com/agendamentos");
-      const agendamentos = await resposta.json();
+      try {
+        const resposta = await fetch("https://agenda-koby-v01.onrender.com/agendamentos");
+        const agendamentos = await resposta.json();
 
-      const tbody = document.getElementById("corpo-calendario");
-      tbody.innerHTML = "";
+        const tbody = document.getElementById("corpo-calendario");
+        tbody.innerHTML = "";
 
-      horarios.forEach(hora => {
-        const linha = document.createElement("tr");
-        linha.innerHTML = `<td>${hora}</td>`;
+        horarios.forEach(hora => {
+          const linha = document.createElement("tr");
+          linha.innerHTML = `<td>${hora}</td>`;
 
-        diasSemana.forEach(dia => {
-          const agendamentosDoHorario = agendamentos.filter(a => a.data === dia && a.hora === hora);
-          if (agendamentosDoHorario.length > 0) {
-            let cellContent = "";
-            let tooltipText = "";
-            agendamentosDoHorario.forEach(a => {
-              let classe = "livre";
-              if (a.analista === "Harisson") classe = "harisson";
-              else if (a.analista === "Byanka") classe = "byanka";
-              else if (a.analista === "Leandro") classe = "leandro";
-              cellContent += `<div class="${classe}">${a.analista}</div>`;
-              tooltipText += `${a.analista} - ${a.nomeCompleto}\n${a.empreendimento}, Torre ${a.torre}, Unidade ${a.unidade}\nCPF: ${a.cpf}\nTipo: ${a.tipoAtendimento}\n\n`;
-            });
-            linha.innerHTML += `<td title="${tooltipText.trim()}">${cellContent}</td>`;
-          } else {
-            linha.innerHTML += `<td class="livre">Livre</td>`;
-          }
+          diasSemana.forEach(dia => {
+            const agendamentosDoHorario = agendamentos.filter(a => a.data === dia && a.hora === hora);
+            if (agendamentosDoHorario.length > 0) {
+              let cellContent = "";
+              let tooltipText = "";
+              agendamentosDoHorario.forEach(a => {
+                let classe = "livre";
+                if (a.analista === "Harisson") classe = "harisson";
+                else if (a.analista === "Byanka") classe = "byanka";
+                else if (a.analista === "Leandro") classe = "leandro";
+                cellContent += `<div class="${classe}">${a.analista}</div>`;
+                tooltipText += `${a.analista} - ${a.nomeCompleto}\n${a.empreendimento}, Torre ${a.torre}, Unidade ${a.unidade}\nCPF: ${a.cpf}\nTipo: ${a.tipoAtendimento}\n\n`;
+              });
+              linha.innerHTML += `<td title="${tooltipText.trim()}">${cellContent}</td>`;
+            } else {
+              linha.innerHTML += `<td class="livre">Livre</td>`;
+            }
+          });
+
+          tbody.appendChild(linha);
         });
-
-        tbody.appendChild(linha);
-      });
+      } catch (error) {
+        console.error("Erro ao carregar calendário:", error);
+      }
     }
   </script>
 

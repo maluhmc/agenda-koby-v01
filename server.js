@@ -8,7 +8,10 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DB_PATH = './agendamentos.json';
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://agenda-koby-v02.onrender.com'
+}));
+
 app.use(bodyParser.json());
 
 function lerAgendamentos() {
@@ -20,6 +23,10 @@ function lerAgendamentos() {
 function salvarAgendamentos(dados) {
   fs.writeFileSync(DB_PATH, JSON.stringify(dados, null, 2));
 }
+
+app.get('/', (req, res) => {
+  res.send('API de agendamento online 🎯');
+});
 
 app.get('/agendamentos', (req, res) => {
   const agendamentos = lerAgendamentos();

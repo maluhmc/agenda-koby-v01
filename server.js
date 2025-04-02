@@ -7,6 +7,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const DB_PATH = './agendamentos.json';
 
+app.use(express.static('public'));
+
 app.use(cors({
   origin: 'https://agenda-koby-v02.onrender.com'
 }));

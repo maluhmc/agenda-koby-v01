@@ -68,3 +68,9 @@ app.get('/horarios', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
+const path = require('path');
+
+// Rota principal que serve o index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});

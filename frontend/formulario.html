@@ -127,6 +127,7 @@
 
     try {
       const resposta = await fetch("https://agenda-koby-v01.onrender.com/agendar", {
+    headers: { 'Content-Type': 'application/json' },
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -150,7 +151,7 @@
 
   // Carrega os agendamentos futuros
 async function carregarAgendamentos() {
-  const resposta = await fetch("https://agenda-koby-v01.onrender.com/agendamentos");
+  const resposta = await fetch("https://agenda-koby-v01.onrender.com/agendamentos", { headers: { 'Content-Type': 'application/json' } });
   const agendamentos = await resposta.json();
 
   const filtroSelect = document.getElementById("filtroAnalista");
@@ -222,7 +223,7 @@ async function atualizarHorariosDisponiveis() {
   const todosHorarios = await respostaHorarios.json();
 
   // Busca os agendamentos existentes
-  const respostaAgendados = await fetch("https://agenda-koby-v01.onrender.com/agendamentos");
+  const respostaAgendados = await fetch("https://agenda-koby-v01.onrender.com/agendamentos", { headers: { 'Content-Type': 'application/json' } });
   const agendados = await respostaAgendados.json();
 
   const ocupados = agendados

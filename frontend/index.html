@@ -204,17 +204,34 @@
     }
   </script>
 
+
 <script>
-  window.addEventListener("message", function(e) {
-    if (e.data.tipo === "certificado") {
-      const c = e.data.dados;
-      const linha = document.createElement("tr");
-      linha.innerHTML = `<td>${c.data}</td><td>${c.hora}</td><td>${c.nomeCompleto}</td><td>${c.cpf}</td>
-        <td>${c.empreendimento}</td><td>${c.torre}</td><td>${c.unidade}</td>
-        <td>${c.tipoAtendimento}</td><td>${c.analista}</td><td>Emitido</td><td>${c.dataEmissao}</td>`;
-      document.getElementById("certificados-tabela").appendChild(linha);
-    }
+async function carregarCertificados() {
+  const resposta = await fetch("/certificados");
+  const dados = await resposta.json();
+  const tabela = document.getElementById("certificados-tabela");
+  tabela.innerHTML = "";
+
+  dados.forEach(c => {
+    const linha = document.createElement("tr");
+    linha.innerHTML = `<td>${c.data}</td><td>${c.hora}</td><td>${c.nomeCompleto}</td><td>${c.cpf}</td>
+      <td>${c.empreendimento}</td><td>${c.torre}</td><td>${c.unidade}</td>
+      <td>${c.tipoAtendimento}</td><td>${c.analista}</td><td>Emitido</td><td>${c.dataEmissao}</td>`;
+    const botaoExcluir = document.createElement("button");
+    botaoExcluir.innerText = "EXCLUIR";
+    botaoExcluir.onclick = () => {
+      const confirmar = confirm("Tem certeza que deseja excluir este certificado?");
+      if (confirmar) linha.remove();
+    };
+    const celulaExcluir = document.createElement("td");
+    celulaExcluir.appendChild(botaoExcluir);
+    linha.appendChild(celulaExcluir);
+    tabela.appendChild(linha);
   });
+}
+
+document.addEventListener("DOMContentLoaded", carregarCertificados);
 </script>
+
 </body>
 </html>

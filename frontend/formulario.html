@@ -13,6 +13,7 @@
       <option value="">-- Selecione --</option>
       <option value="Harisson">Harisson</option>
       <option value="Byanka">Byanka</option>
+  <option value="Leandro">Leandro</option>
       <option value="Leandro">Leandro</option>
     </select>
   </label><br /><br />
@@ -86,6 +87,7 @@
   <option value="Harisson">Harisson</option>
   <option value="Byanka">Byanka</option>
   <option value="Leandro">Leandro</option>
+      <option value="Leandro">Leandro</option>
 </select>
 
 <table border="1" id="tabela-agendamentos">
@@ -177,7 +179,7 @@ async function carregarAgendamentos() {
       <td>${a.tipoAtendimento}</td>
       <td>${a.analista}</td>
       <td><button onclick="emitidoCertificado(this)">Emitido</button></td>
-      <td><button onclick="cancelarAgendamento('${a.data}', '${a.hora}')">Cancelar</button></td>
+      <td><button onclick="cancelarAgendamento('${a.data}', '${a.hora}', '${a.analista}', this)">Cancelar</button></td>
     `;
     tbody.appendChild(linha);
   });
@@ -188,7 +190,7 @@ document.getElementById("filtroAnalista").addEventListener("change", () => {
 });
 
   // Cancela um agendamento
-  async function cancelarAgendamento(data, hora) {
+  async function cancelarAgendamento(data, hora, analista) {
     const confirmar = confirm(`Deseja cancelar o agendamento de ${data} às ${hora}?`);
     if (!confirmar) return;
 
@@ -197,7 +199,7 @@ document.getElementById("filtroAnalista").addEventListener("change", () => {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ data, hora })
+      body: JSON.stringify({ data, hora, analista })
     });
 
     const resultado = await resposta.json();

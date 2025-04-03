@@ -52,18 +52,10 @@
     th {
       background-color: #f7f7f7;
     }
-    .livre {
-      background-color: #d4edda;
-    }
-    .harisson {
-      background-color: #d0ebff;
-    }
-    .leandro {
-      background-color: #d4edda;
-    }
-    .byanka {
-      background-color: #fce4ec;
-    }
+    .livre { background-color: #d4edda; }
+    .harisson { background-color: #d0ebff; }
+    .byanka { background-color: #fce4ec; }
+    .leandro { background-color: #c8e6c9; }
     footer {
       margin-top: 40px;
       font-size: 0.9em;
@@ -73,6 +65,16 @@
 </head>
 <body>
 
+<div id="login-container" style="text-align: center; margin-top: 100px;">
+  <img src="logo-koby-jpg-colorido.jpg" alt="Logo Koby" class="logo" style="max-width: 200px; margin-bottom: 20px;">
+  <h2>Login</h2>
+  <input type="text" id="usuario" placeholder="Usuário" /><br/><br/>
+  <input type="password" id="senha" placeholder="Senha" /><br/><br/>
+  <button onclick="verificarLogin()">Entrar</button>
+  <p id="erro-login" style="color: red;"></p>
+</div>
+
+<div id="conteudo" style="display: none;">
   <img src="logo-koby-jpg-colorido.jpg" alt="Logo Koby" class="logo">
 
   <div class="tabs">
@@ -85,7 +87,6 @@
     <iframe src="formulario.html" width="100%" height="1000px" frameborder="0"></iframe>
   </div>
 
-  
   <div id="certificados" class="tab-content">
     <h2>Certificados Emitidos</h2>
     <table border="1">
@@ -119,104 +120,92 @@
       <thead>
         <tr>
           <th>Horário</th>
-          <th id="dia0"></th>
-          <th id="dia1"></th>
-          <th id="dia2"></th>
-          <th id="dia3"></th>
-          <th id="dia4"></th>
+          <th id="dia0"></th><th id="dia1"></th><th id="dia2"></th><th id="dia3"></th><th id="dia4"></th>
         </tr>
       </thead>
       <tbody id="corpo-calendario"></tbody>
     </table>
   </div>
 
-  <footer>
-    Criado por marialuisa.campos
-  </footer>
-
-  <script>
-    function mostrarAba(aba) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
-      document.getElementById(aba).classList.add('active');
-      document.getElementById('btn' + aba.charAt(0).toUpperCase() + aba.slice(1)).classList.add('active');
-      if (aba === 'calendario') carregarCalendario();
-    }
-
-    const horarios = [
-      "09:00", "09:15", "09:30", "09:45",
-      "10:00", "10:15", "10:30", "10:45",
-      "11:00", "11:15", "11:30", "11:45",
-      "12:00", "12:15", "12:30", "12:45",
-      "13:00", "13:15", "13:30", "13:45",
-      "14:00", "14:15", "14:30", "14:45",
-      "15:00", "15:15", "15:30", "15:45",
-      "16:00", "16:15", "16:30", "16:45",
-      "17:00", "17:15", "17:30", "17:45"
-    ];
-
-    let offsetSemana = 0;
-
-    function mudarSemana(direcao) {
-      offsetSemana += direcao;
-      carregarCalendario();
-    }
-
-    async function carregarCalendario() {
-      const hoje = new Date();
-      const inicioSemana = new Date(hoje.setDate(hoje.getDate() - hoje.getDay() + 1 + (offsetSemana * 7)));
-      const diasSemana = [];
-      for (let i = 0; i < 5; i++) {
-        const data = new Date(inicioSemana);
-        data.setDate(inicioSemana.getDate() + i);
-        const dia = data.toISOString().split('T')[0];
-        diasSemana.push(dia);
-
-        const nomeDia = data.toLocaleDateString('pt-BR', { weekday: 'long' });
-        const formatado = `${nomeDia.charAt(0).toUpperCase() + nomeDia.slice(1)} (${data.toLocaleDateString('pt-BR')})`;
-        document.getElementById('dia' + i).innerText = formatado;
-      }
-
-      const resposta = await fetch("https://agenda-koby-v01.onrender.com/agendamentos");
-      const agendamentos = await resposta.json();
-
-      const tbody = document.getElementById("corpo-calendario");
-      tbody.innerHTML = "";
-
-      horarios.forEach(hora => {
-        const linha = document.createElement("tr");
-        linha.innerHTML = `<td>${hora}</td>`;
-
-        diasSemana.forEach(dia => {
-          const agendamentosDoHorario = agendamentos.filter(a => a.data === dia && a.hora === hora);
-          if (agendamentosDoHorario.length > 0) {
-            let cellContent = "";
-            let tooltipText = "";
-            agendamentosDoHorario.forEach(a => {
-              let classe = "";
-              if (a.analista === "Harisson") classe = "harisson";
-              else if (a.analista === "Byanka") classe = "byanka";
-              else if (a.analista === "Leandro") classe = "leandro";
-              cellContent += `<div class="${classe}">${a.analista}</div>`;
-              tooltipText += `${a.analista} - ${a.nomeCompleto}\n${a.empreendimento}, Torre ${a.torre}, Unidade ${a.unidade}\nCPF: ${a.cpf}\nTipo: ${a.tipoAtendimento}\n\n`;
-            });
-            linha.innerHTML += `<td title="${tooltipText.trim()}">${cellContent}</td>`;
-          } else {
-            linha.innerHTML += `<td class="livre">Livre</td>`;
-          }
-        });
-
-        tbody.appendChild(linha);
-      });
-    }
-  </script>
+  <footer>Criado por marialuisa.campos</footer>
+</div>
 
 <script>
+  function verificarLogin() {
+    const usuario = document.getElementById("usuario").value;
+    const senha = document.getElementById("senha").value;
+    if (usuario === "admkoby25" && senha === "koby1010") {
+      document.getElementById("login-container").style.display = "none";
+      document.getElementById("conteudo").style.display = "block";
+    } else {
+      document.getElementById("erro-login").innerText = "Usuário ou senha incorretos.";
+    }
+  }
+
+  function mostrarAba(aba) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tabs button').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(aba).classList.add('active');
+    document.getElementById('btn' + aba.charAt(0).toUpperCase() + aba.slice(1)).classList.add('active');
+    if (aba === 'calendario') carregarCalendario();
+  }
+
+  const horarios = [...Array(36)].map((_, i) => {
+    const h = 9 + Math.floor(i / 4);
+    const m = (i % 4) * 15;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+  });
+
+  let offsetSemana = 0;
+  function mudarSemana(d) { offsetSemana += d; carregarCalendario(); }
+
+  async function carregarCalendario() {
+    const hoje = new Date();
+    const inicioSemana = new Date(hoje.setDate(hoje.getDate() - hoje.getDay() + 1 + (offsetSemana * 7)));
+    const diasSemana = [];
+
+    for (let i = 0; i < 5; i++) {
+      const data = new Date(inicioSemana);
+      data.setDate(inicioSemana.getDate() + i);
+      const dia = data.toISOString().split('T')[0];
+      diasSemana.push(dia);
+      const nomeDia = data.toLocaleDateString('pt-BR', { weekday: 'long' });
+      document.getElementById('dia' + i).innerText = `${nomeDia.charAt(0).toUpperCase() + nomeDia.slice(1)} (${data.toLocaleDateString('pt-BR')})`;
+    }
+
+    const resposta = await fetch("https://agenda-koby-v01.onrender.com/agendamentos");
+    const agendamentos = await resposta.json();
+    const tbody = document.getElementById("corpo-calendario");
+    tbody.innerHTML = "";
+
+    horarios.forEach(hora => {
+      const linha = document.createElement("tr");
+      linha.innerHTML = `<td>${hora}</td>`;
+      diasSemana.forEach(dia => {
+        const ags = agendamentos.filter(a => a.data === dia && a.hora === hora);
+        if (ags.length > 0) {
+          let cell = "", tooltip = "";
+          ags.forEach(a => {
+            let classe = a.analista === "Harisson" ? "harisson" : a.analista === "Byanka" ? "byanka" : "leandro";
+            cell += `<div class="${classe}">${a.analista}</div>`;
+            tooltip += `${a.analista} - ${a.nomeCompleto}\n${a.empreendimento}, Torre ${a.torre}, Unidade ${a.unidade}\nCPF: ${a.cpf}\nTipo: ${a.tipoAtendimento}\n\n`;
+          });
+          linha.innerHTML += `<td title="${tooltip.trim()}">${cell}</td>`;
+        } else {
+          linha.innerHTML += '<td class="livre">Livre</td>';
+        }
+      });
+      tbody.appendChild(linha);
+    });
+  }
+
   window.addEventListener("message", function(e) {
     if (e.data.tipo === "certificado") {
       const c = e.data.dados;
+      const [ano, mes, dia] = c.data.split("-");
+      const dataFormatada = `${dia}/${mes}/${ano}`;
       const linha = document.createElement("tr");
-      linha.innerHTML = `<td>${c.data}</td><td>${c.hora}</td><td>${c.nomeCompleto}</td><td>${c.cpf}</td>
+      linha.innerHTML = `<td>${dataFormatada}</td><td>${c.hora}</td><td>${c.nomeCompleto}</td><td>${c.cpf}</td>
         <td>${c.empreendimento}</td><td>${c.torre}</td><td>${c.unidade}</td>
         <td>${c.tipoAtendimento}</td><td>${c.analista}</td><td>Emitido</td><td>${c.dataEmissao}</td>`;
       const botaoExcluir = document.createElement("button");
@@ -228,7 +217,17 @@
       const celulaExcluir = document.createElement("td");
       celulaExcluir.appendChild(botaoExcluir);
       linha.appendChild(celulaExcluir);
-      document.getElementById("certificados-tabela").appendChild(linha);
+
+      const tabela = document.getElementById("certificados-tabela");
+      tabela.appendChild(linha);
+
+      const linhas = Array.from(tabela.querySelectorAll("tr"));
+      linhas.sort((a, b) => {
+        const dataA = b.children[10]?.innerText.split(" ")[0].split("/").reverse().join("-");
+        const dataB = a.children[10]?.innerText.split(" ")[0].split("/").reverse().join("-");
+        return new Date(dataA) - new Date(dataB);
+      });
+      linhas.forEach(l => tabela.appendChild(l));
     }
   });
 </script>

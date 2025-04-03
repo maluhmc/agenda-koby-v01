@@ -5,6 +5,12 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 const app = express();
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'frontend')));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'frontend', 'index.html'));
+});
 const PORT = process.env.PORT; // Obrigatório para Render
 
 const DB_PATH = './agendamentos.json';

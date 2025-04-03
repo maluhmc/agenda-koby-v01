@@ -31,6 +31,12 @@ app.get('/', (req, res) => {
 
 app.get('/agendamentos', (req, res) => {
   const agendamentos = lerAgendamentos();
+  // Ordena por data e hora crescentes
+  agendamentos.sort((a, b) => {
+    const dataA = new Date(a.data + 'T' + a.hora);
+    const dataB = new Date(b.data + 'T' + b.hora);
+    return dataA - dataB;
+  });
   res.json(agendamentos);
 });
 

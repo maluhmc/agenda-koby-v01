@@ -102,6 +102,7 @@
           <th>Analista</th>
           <th>Status</th>
           <th>Data de Emissão</th>
+          <th>Excluir</th>
         </tr>
       </thead>
       <tbody id="certificados-tabela"></tbody>
@@ -218,6 +219,12 @@
       linha.innerHTML = `<td>${c.data}</td><td>${c.hora}</td><td>${c.nomeCompleto}</td><td>${c.cpf}</td>
         <td>${c.empreendimento}</td><td>${c.torre}</td><td>${c.unidade}</td>
         <td>${c.tipoAtendimento}</td><td>${c.analista}</td><td>Emitido</td><td>${c.dataEmissao}</td>`;
+      const botaoExcluir = document.createElement("button");
+      botaoExcluir.innerText = "EXCLUIR";
+      botaoExcluir.onclick = () => linha.remove();
+      const celulaExcluir = document.createElement("td");
+      celulaExcluir.appendChild(botaoExcluir);
+      linha.appendChild(celulaExcluir);
       document.getElementById("certificados-tabela").appendChild(linha);
     }
   });

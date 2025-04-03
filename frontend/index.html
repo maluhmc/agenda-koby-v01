@@ -58,9 +58,6 @@
     .harisson {
       background-color: #d0ebff;
     }
-    .leandro {
-      background-color: #d4edda;
-    }
     .byanka {
       background-color: #fce4ec;
     }
@@ -102,7 +99,6 @@
           <th>Analista</th>
           <th>Status</th>
           <th>Data de Emissão</th>
-          <th>Excluir</th>
         </tr>
       </thead>
       <tbody id="certificados-tabela"></tbody>
@@ -193,10 +189,7 @@
             let cellContent = "";
             let tooltipText = "";
             agendamentosDoHorario.forEach(a => {
-              let classe = "";
-              if (a.analista === "Harisson") classe = "harisson";
-              else if (a.analista === "Byanka") classe = "byanka";
-              else if (a.analista === "Leandro") classe = "leandro";
+              const classe = a.analista === "Harisson" ? "harisson" : "byanka";
               cellContent += `<div class="${classe}">${a.analista}</div>`;
               tooltipText += `${a.analista} - ${a.nomeCompleto}\n${a.empreendimento}, Torre ${a.torre}, Unidade ${a.unidade}\nCPF: ${a.cpf}\nTipo: ${a.tipoAtendimento}\n\n`;
             });
@@ -219,12 +212,6 @@
       linha.innerHTML = `<td>${c.data}</td><td>${c.hora}</td><td>${c.nomeCompleto}</td><td>${c.cpf}</td>
         <td>${c.empreendimento}</td><td>${c.torre}</td><td>${c.unidade}</td>
         <td>${c.tipoAtendimento}</td><td>${c.analista}</td><td>Emitido</td><td>${c.dataEmissao}</td>`;
-      const botaoExcluir = document.createElement("button");
-      botaoExcluir.innerText = "EXCLUIR";
-      botaoExcluir.onclick = () => linha.remove();
-      const celulaExcluir = document.createElement("td");
-      celulaExcluir.appendChild(botaoExcluir);
-      linha.appendChild(celulaExcluir);
       document.getElementById("certificados-tabela").appendChild(linha);
     }
   });

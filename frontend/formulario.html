@@ -288,7 +288,8 @@ async function atualizarHorariosDisponiveis() {
     });
 
     if (resposta.ok) {
-      linha.remove(); // remove a linha da tabela de agendamentos
+      linha.remove();
+window.parent.postMessage({ tipo: "atualizar_certificados" }, "*"); // remove a linha da tabela de agendamentos
     } else {
       alert("Erro ao emitir o certificado.");
     }

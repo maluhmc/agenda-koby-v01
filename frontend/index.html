@@ -231,6 +231,9 @@ async function carregarCertificados() {
 }
 
 document.addEventListener("DOMContentLoaded", carregarCertificados);
+window.addEventListener("message", (e) => {
+  if (e.data.tipo === "atualizar_certificados") carregarCertificados();
+});
 </script>
 
 </body>
